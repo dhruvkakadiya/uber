@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Dashboard Driver</title>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://code.angularjs.org/1.3.15/angular.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
+    <script src="angular/driverDashboard.js"></script>
+    <script src="angular/socket-service.js"></script>
+    <script src="angular/ng-infinite-scroll.min.js"></script>
+    <!--<script>
+        var socket = io.connect('http://localhost:3000');
+        console.log(socket);
+
+        socket.on('new_msg',function(data){
+            //alert(data.msg);
+        });
+
+        socket.emit('join',{ email: 'cbsejpal@gmail.com' });
+
+    </script>-->
+
+    <link href="stylesheets/dashboard.css" rel="stylesheet">
+    <script>
+
+        $(document).ready( function() {
+
+            $('.myrides').show();
+            $('.profile').hide();
+            $('.requestedRide').hide();
+      
+        
+            $(".click1").on("click", function() {
+                $('.myrides').show();
+                $('.profile').hide();
+                $('.requestedRide').hide();
+                
+            });
+            
+            $(".click2").on("click", function() {
+            	
+
+                $('.requestedRide').show();
+                $('.myrides').hide();
+                $('.profile').hide();
+            
+            });
+            $(".click3").on("click", function(){
+            	$('.requestedRide').hide();
+                $('.myrides').hide();
+                $('.profile').show();
+            
+            })
+            });
+            
+     
+    </script>
+
+</head>
+
+<body ng-app="drivers" ng-controller="socket" ng-init="driverId='<%= driverId%>'">
+<% include navbar.ejs %>
+
+
+<div class="container-fluid">
+    <div class="row" style="margin-left: 1000px; margin-top: 10px;">
+        Haven't filled the details yet?<a href="/driverDetails"> Click here</a>
+    </div>
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li class="active"><a>Dashboard <span class="sr-only">(current)</span></a></li>
+
+                <li class=""><a href="javascript:void(0)" class="click1">My Trips</a></li>
+           
+                <li ng-disabled="currentRideId"><a href="requestedRide" class="click2">Requested Ride</a></li>
+                
+                <li><a href="javascript:void(0)" class="click3">Profile</a></li>
+
+                <li><a href="/logout">Log out</a></li>
+
+                <br> <br><br> <br><br> <br><br> <br><br> <br><br> <br><br> <br><br> <br>
+                <li><a href="/deleteSelfDriver" style="color: red;">Deactivate Your account</a></li>
+            </ul>
+
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+            <div class="myrides" infinite-scroll="getRidesInfo()" infinite-scroll-distance="0"
+                 infinite-scroll-disabled="{{loadMore}}" ng-controller="myrides">
+                <center>
+                    <h2 class="sub-header">MY RIDES</h2>
+                    </center>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Ride</th>
+                            <th>Customer</th>
+                            <th>Fare</th>
+                           
+                            <th>PickUp</th>
+                            <th>Dropoff</th>
+                            <th>Bill Details</th>
+                        </tr>
+                        </thead>
+                        <tbody ng-repeat="k in rides">
+
+                        <tr>
+                            <td>{{k.rideId}}</td>
+                            <td>{{k.customerId}}</td>
+                            <td>${{k.rideAmount}}</td>
+                            
+                            <td>{{k.pickUpLocation}}</td>
+                            <td>{{k.dropOffLocation}}</td>
+                            <td> <a href="customerRideBill?bill={{k.billingId}}">Bill</a></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+
+
+            <div class="profile" ng-controller="profile" style="margin-top:-10px;">
+                <form id="form" method="post" name='profileUpdate' novalidate>
+                <center>  <h2 class="sub-header">PROFILE</h2></center>
+                <h4>General Information</h4><hr>
+                <div class="row">
+                    <div class="col-md-2">
+                        <p>First name : </p>
+                    </div>
+                    <div class="col-md-3"><input class="form-control" ng-pattern="/^([a-zA-Z]{1,20})$/" type="text" ng-model="firstName" name="firstName" required></div>
+
+                    <div class="col-md-2">
+                        <p>Last name : </p>
+                    </div>
+                    <div class="col-md-3"><input class="form-control" type="text" ng-model="lastName" ng-pattern="/^([a-zA-Z]{1,20})$/" name="lastName" required></div>
+                </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                        <span style="color:red" ng-show="profileUpdate.firstName.$dirty && profileUpdate.firstName.$invalid">
+  					        <span ng-show="profileUpdate.firstName.$error.required">First Name is required.</span>
+                            <span ng-show="profileUpdate.firstName.$error.pattern">Please enter alphabets only</span>
+
+                        </span>
+                        </div>
+                        <div class="col-md-5">
+                        <span style="color:red" ng-show="profileUpdate.lastName.$dirty && profileUpdate.lastName.$invalid">
+  					        <span ng-show="profileUpdate.lastName.$error.required">Last Name is required.</span>
+                            <span ng-show="profileUpdate.lastName.$error.pattern">Please enter alphabets only</span>
+                        </span>
+                        </div>
+                    </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-2">
+                        <p> City : </p>
+                    </div>
+
+                    <div class="col-md-3"><input class="form-control" type="text" ng-pattern="/^[a-zA-Z ]*$/" ng-model="city" name="city" required></div>
+
+                    <div class="col-md-2">
+                        <p> State : </p>
+                    </div>
+                    <div class="col-md-3"><input class="form-control" type="text" ng-model="state" name="state" ng-pattern="/^(?:A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])*$/" required></div>
+
+                </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <span style="color:red" ng-show="profileUpdate.city.$dirty && profileUpdate.city.$invalid">
+  					            <span ng-show="profileUpdate.city.$error.required">City is required.</span>
+                                <span ng-show="profileUpdate.city.$error.pattern">Enter a Valid City Name</span>
+
+  		                    </span>
+                        </div>
+                        <div class="col-md-5">
+                            <span style="color:red" ng-show="profileUpdate.state.$dirty && profileUpdate.state.$invalid">
+  					            <span ng-show="profileUpdate.state.$error.required">State is required.</span>
+                                <span ng-show="profileUpdate.state.$error.pattern">Enter a Valid US State Code</span>
+  		                    </span>
+                        </div>
+                    </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-2">
+                        <p> Email : </p>
+                    </div>
+                    <div class="col-md-3"><input class="form-control" type="text" ng-model="email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" name="email" disabled required></div>
+
+                    <div class="col-md-2">
+                        <p> Zip Code : </p>
+                    </div>
+                    <div class="col-md-3"><input class="form-control"  ng-pattern="/^(\d{5}(-\d{4})?|[A-Z]\d[A-Z] *\d[A-Z]\d)$/" type="text" ng-model="zipCode" name="zipCode" required></div>
+                </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                        <span style="color:red" ng-show="profileUpdate.email.$dirty && profileUpdate.email.$invalid">
+  					        <span ng-show="profileUpdate.email.$error.required">Email is required.</span>
+					        <span ng-show="profileUpdate.email.$error.pattern">Incorrect Email address.</span>
+  				        </span>
+                        </div>
+                        <div class="col-md-5">
+                        <span style="color:red" ng-show="profileUpdate.zipCode.$dirty && profileUpdate.zipCode.$invalid">
+  					        <span ng-show="profileUpdate.zipCode.$error.required">Zipcode is required.</span>
+					        <span ng-show="profileUpdate.zipCode.$error.pattern">Incorrect Zipcode.</span>
+  		                </span>
+                        </div>
+                    </div>
+                <hr>
+
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <p> Mobile : </p>
+                    </div>
+                    <div class="col-md-3"><input class="form-control" type="text" ng-pattern= "/^(\([0-9]{3}\) |[0-9]{3}-)[0-9]{3}-[0-9]{4}$/" ng-model="phoneNumber" name="phoneNumber" required></div>
+
+                    <div class="col-md-2">
+                        <p> CarDetails : </p>
+                    </div>
+                    <div class="col-md-3"><textarea style="resize: none;" class="form-control" type="text" ng-model="carDetails" name="carDetails" required></textarea></div>
+                </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                        <span style="color:red" ng-show="profileUpdate.phoneNumber.$dirty && profileUpdate.phoneNumber.$invalid">
+  					        <span ng-show="profileUpdate.phoneNumber.$error.required">Mobile number is required.</span>
+					        <span ng-show="profileUpdate.phoneNumber.$error.pattern">Mobile number is incorrect.</span>
+  		                </span>
+                        </div>
+                        <div class="col-md-5">
+                        <span style="color:red" ng-show="profileUpdate.carDetails.$dirty && profileUpdate.carDetails.$invalid">
+  					        <span ng-show="profileUpdate.carDetails.$error.required">Car Details information is required.</span>
+                        </span>
+                        </div>
+                    </div>
+                <hr>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p> SSN ID : </p>
+                        </div>
+                        <div class="col-md-3"><input class="form-control" type="text" ng-pattern= "/^([0-9]{3}[-]*[0-9]{2}[-]*[0-9]{4})*$/" ng-model="ssn" name="ssn" disabled required></div>
+
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success" ng-click="save($event)">Save </button>
+
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+
+
+</div>
+
+     
+    </div>
+
+</div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+</body>
+</html>

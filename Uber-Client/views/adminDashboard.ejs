@@ -1,0 +1,415 @@
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard Admin</title>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script src="http://maps.google.com/maps/api/js?libraries=placeses,visualization,drawing,geometry,places"></script>
+    <script src="http://code.angularjs.org/1.3.15/angular.js"></script>
+    <script src="angular/ng-infinite-scroll.min.js"></script>
+    <script src="http://rawgit.com/allenhwkim/angularjs-google-maps/master/build/scripts/ng-map.js"></script>
+    <script src="angular/adminDashboard.js"></script>
+    <link href="stylesheets/dashboard.css" rel="stylesheet">
+    <link href="stylesheets/admin.css" rel="stylesheet">
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('.drivers').hide();
+            $('.customers').hide();
+            $('.requests').show();
+            $('.analysis').hide();
+            $('.billing').hide();
+            $('.map-analysis').hide();
+            $('.ridePerArea').hide();
+
+            $(".click1").on("click", function () {
+                $('.drivers').show();
+                $('.customers').hide();
+                $('.requests').hide();
+                $('.analysis').hide();
+                $('.billing').hide();
+                $('.map-analysis').hide();
+                $('.ridePerArea').hide();
+            });
+            $(".click2").on("click", function () {
+                $('.drivers').hide();
+                $('.customers').show();
+                $('.requests').hide();
+                $('.analysis').hide();
+                $('.billing').hide();
+                $('.map-analysis').hide();
+                $('.ridePerArea').hide();
+            });
+
+
+            $(".click3").on("click", function () {
+                $('.drivers').hide();
+                $('.customers').hide();
+                $('.requests').show();
+                $('.analysis').hide();
+                $('.billing').hide();
+                $('.map-analysis').hide();
+                $('.ridePerArea').hide();
+            });
+            $(".click4").on("click", function () {
+                $('.drivers').hide();
+                $('.customers').hide();
+                $('.requests').hide();
+                $('.analysis').show();
+                $('.billing').hide();
+                $('.map-analysis').hide();
+                $('.ridePerArea').hide();
+            });
+            $(".click5").on("click", function () {
+                $('.drivers').hide();
+                $('.customers').hide();
+                $('.requests').hide();
+                $('.analysis').hide();
+                $('.billing').show();
+                $('.map-analysis').hide();
+                $('.ridePerArea').hide();
+            });
+            $(".click6").on("click", function () {
+                $('.drivers').hide();
+                $('.customers').hide();
+                $('.requests').hide();
+                $('.analysis').hide();
+                $('.billing').hide();
+                $('.map-analysis').show();
+                $('.ridePerArea').hide();
+            });
+            $(".click7").on("click", function () {
+                $('.drivers').hide();
+                $('.customers').hide();
+                $('.requests').hide();
+                $('.analysis').hide();
+                $('.billing').hide();
+                $('.map-analysis').hide();
+                $('.ridePerArea').show();
+            });
+        });
+
+
+    </script>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">U B E R</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"
+                                                                                     style="font-size:30px;"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Admin</a></li>
+                        <li class="divider"></li>
+
+                        <li><a href="logout">Logout</a></li>
+                    </ul>
+
+            </ul>
+
+
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li class="active"><a>Admin Dashboard <span class="sr-only">(current)</span></a></li>
+                <li class=""><a href="javascript:void(0)" class="click3">Pending Requests </a></li>
+                <li class=""><a href="javascript:void(0)" class="click1">Drivers List</a></li>
+                <li class=""><a href="javascript:void(0)" class="click2">Customers List</a></li>
+                <li class=""><a href="javascript:void(0)" class="click5">Billing Info</a></li>
+                <li><a href="javascript:void(0)" class="click4">Revenue per Day</a></li>
+                <li><a href="mapAnalysis" class="click6">Analysis -  Area Wise</a></li>
+                <li><a href="javascript:void(0)" class="click7">Rides per Area</a></li>
+                <li><a href="/logout">Log out</a></li>
+            </ul>
+
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-app="ngMap">
+
+            <div class="drivers" infinite-scroll="getDriverList()" infinite-scroll-distance="0"
+                 infinite-scroll-disabled="{{loadMore}}" ng-controller="drivers">
+                <center><h2 class="sub-header">Drivers' list</h2></center>
+                <div class="col-md-9"></div>
+                <div class="col-md-3" style="margin-top:-55px;">
+                    <form>
+                        <div class="input-group">
+                            <input type="text" ng-model="search" style="float:right;" class="form-control"
+                                   placeholder="Search for...">
+				      <span class="input-group-btn">
+				        <button class="btn btn-default" ng-click="getSearchDriverListInitial()" type="button">Go!</button>
+				      </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Driver</th>
+                                <th>Lastname</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody ng-repeat="k in items">
+                            <tr>
+                                <td>{{k.driver_id}}</td>
+                                <td>{{k.firstName}}</td>
+                                <td>{{k.lastName}}</td>
+                                <td>{{k.email}}</td>
+                                <td>
+                                    <button class="btn btn-danger" type="button" ng-click="deleteDriver(k.email)">Delete
+                                    </button>
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary" type="button" href="driverAnalysis?driverId={{k.email}}">
+                                        RidesInformation
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- customers div -->
+
+            <div class="customers" infinite-scroll="getCustomerList()" infinite-scroll-distance="0"
+                 infinite-scroll-disabled="{{loadMore}}" ng-controller="customers">
+                <center><h2 class="sub-header">Customers' list</h2></center>
+                <div class="col-md-9"></div>
+                <div class="col-md-3" style="margin-top:-55px;">
+                    <form>
+                        <div class="input-group">
+                            <input type="text" ng-model="search" style="float:right;" class="form-control"
+                                   placeholder="Search for...">
+				      <span class="input-group-btn">
+				        <button class="btn btn-default" ng-click="getSearchCustomerListInitial()" type="button">Go!
+                        </button>
+				      </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Firstname</th>
+                                <th>Lastname</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                                <th>Rides</th>
+                            </tr>
+                            </thead>
+                            <tbody ng-repeat="k in items">
+                            <tr>
+                                <td>{{k.customer_id}}</td>
+                                <td>{{k.firstName}}</td>
+                                <td>{{k.lastName}}</td>
+                                <td>{{k.email}}</td>
+
+                                <td>
+                                    <button class="btn btn-danger" type="button" ng-click="deleteCustomer(k.email)">
+                                        Delete
+                                    </button>
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary" type="button" href="customerAnalysis?customerId={{k.email}}">
+                                        RidesInformation
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing div -->
+
+            <div class="billing" infinite-scroll="getBillList()" infinite-scroll-distance="0"
+                 infinite-scroll-disabled="{{loadMore}}" ng-controller="billing">
+                <center><h2 class="sub-header">Bills list</h2></center>
+                <div class="col-md-9"></div>
+                <div class="col-md-3" style="margin-top:-55px;">
+                    <form>
+                        <div class="input-group">
+                            <input type="text" ng-model="search" style="float:right;" class="form-control"
+                                   placeholder="Search for...">
+				      <span class="input-group-btn">
+				        <button class="btn btn-default" ng-click="getSearchBillListInitial()" type="button">Go!
+                        </button>
+				      </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>CustomerID</th>
+                                <th>DriverID</th>
+                                <th>Pickup Location</th>
+                                <th>Drop Location</th>
+                                <th>Distance</th>
+                                <th>Amount</th>
+                            </tr>
+                            </thead>
+                            <tbody ng-repeat="k in items">
+                            <tr>
+                                <td>{{k.billingId}}</td>
+                                <td>{{k.customerId}}</td>
+                                <td>{{k.driverId}}</td>
+                                <td>{{k.pickUpLocation}}</td>
+                                <td>{{k.dropOffLocation}}</td>
+                                <td>{{k.rideDistance}}</td>
+                                <td>${{k.rideAmount}}</td>
+                                <td>
+                                    <button class="btn btn-danger" type="button" ng-click="deleteBill(k.billingId)">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- request -->
+
+            <div class="requests" ng-controller="requests">
+                <center><h2 class="sub-header">Approval needed from admin</h2></center>
+                <p>Customer List :</p>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>City</th>
+                        <th>SSN</th>
+                        <th>Card</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody ng-repeat="k in customers">
+                    <tr>
+                        <td>{{k.customer_id}}</td>
+                        <td>{{k.firstName}}</td>
+                        <td>{{k.email}}</td>
+                        <td>{{k.city}}</td>
+                        <td>{{k.ssn}}</td>
+                        <td>{{k.creditCard}}</td>
+
+                        <td>
+                            <button class="btn btn-success" type="submit" ng-click="approveCustomer(k.email)">Approve
+                            </button>
+                            <button class="btn btn-danger" type="button" ng-click="ignoreCustomer(k.email)">Ignore
+                            </button>
+                        </td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+                <p> Driver List : </p>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Driver</th>
+                        <th>Email</th>
+                        <th>City</th>
+                        <th>SSN</th>
+                        <th>Car</th>
+                        <th>License</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody ng-repeat="k in drivers">
+                    <tr>
+                        <td>{{k.driver_id}}</td>
+                        <td>{{k.firstName}}</td>
+
+                        <td>{{k.email}}</td>
+                        <td>{{k.city}}</td>
+                        <td>{{k.ssn}}</td>
+                        <td>{{k.carDetails}}</td>
+                        <td>{{k.license}}</td>
+
+
+
+                        <td>
+                            <button class="btn btn-success" type="button" ng-click="approveDriver(k.email)">Approve
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+
+            <div class="analysis" ng-controller="analysis">
+                <svg class="chart"></svg>
+                <script src="js/d3.min.js" charset="utf-8"></script>
+                <!--<script src="js/index.js"></script>-->
+            </div>
+
+            <div class="ridePerArea" ng-controller="ridesPerArea">
+                <svg class="chart"></svg>
+                <script src="js/d3.min.js" charset="utf-8"></script>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+
+</div>
+</body>
+</html>
