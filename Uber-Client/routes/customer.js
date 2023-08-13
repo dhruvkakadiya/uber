@@ -1,4 +1,4 @@
-var mq_client = require('../rpc/client');
+const mq_client = require('../rpc/client');
 var requestGen = require('./commons/responseGenerator');
 
 
@@ -130,6 +130,7 @@ exports.loginCustomer = function(req, res){
                     //console.log("session " + req.session.customerId);
                     //res.status(results.status).send(results.data);
                     json_responses = {"statusCode" : results.status};
+                    console.log(json_responses);
                     res.send(json_responses);
 
                 }

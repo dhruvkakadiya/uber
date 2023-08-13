@@ -60,7 +60,9 @@ async function startServer() {
     await mongo.connect(mongoSessionConnectURL);
     console.log('Connected to MongoDB successfully.');
     // Initialize the Redis client
-    const redisClient = redisResponseCache.getClient();
+    const redis = redisResponseCache.getClient();
+    const value = await redis.get("foo");
+    console.log("Redis response: " + value);
     // Start the server once the connection is established
     server.listen(app.get('port'), () => {
         console.log('Express server listening on port ' + app.get('port'));
