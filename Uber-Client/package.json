@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "amqp": "*",
-    "connect-mongo": "^0.8.2",
+    "connect-mongo": "^4.5.0",
     "ejs": "*",
     "express": "^3.11.0",
     "express-session": "^1.12.1",
