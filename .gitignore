@@ -179,6 +179,7 @@ dist
 
 # Jetbrains files
 .idea
+.settings
 
 # VSCode files
 .vscode
