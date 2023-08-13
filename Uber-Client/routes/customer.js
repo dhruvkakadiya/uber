@@ -114,7 +114,7 @@ exports.loginCustomer = function(req, res){
                     operation:'loginCustomer'
                 }
             };
-            console.log("Requsted to Reddis");
+            console.log("Requested to Redis");
             mq_client.make_request('customer_queue', msg_payload, function(err,results) {
                 console.log(results);
                 if (err) {

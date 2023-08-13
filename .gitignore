@@ -180,6 +180,12 @@ dist
 # Jetbrains files
 .idea
 .settings
+.jshintrc
+.project
+.tern-project
+
+# Sublime files
+.sublime-project
 
 # VSCode files
 .vscode
