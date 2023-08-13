@@ -15,7 +15,7 @@
     "mongoose-auto-increment": "^5.0.1",
     "mysql": "^2.9.0",
     "passport": "^0.3.2",
-    "passport-local-sequelize": "^0.6.0",
+    "passport-local-sequelize": "^0.9.1",
     "request": "*",
     "sequelize": "^6.3.5",
     "underscore": "*"
