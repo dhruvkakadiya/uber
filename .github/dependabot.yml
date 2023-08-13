@@ -5,7 +5,13 @@
 
 version: 2
 updates:
+  # Maintain dependencies for Uber-Backend
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/Uber-Backend"
+    schedule:
+      interval: "weekly"
+  # Maintain dependencies for Uber-Client
+  - package-ecosystem: "npm"
+    directory: "/Uber-Client"
     schedule:
       interval: "weekly"
