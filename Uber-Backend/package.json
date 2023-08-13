@@ -1,23 +1,24 @@
 {
   "name": "RabbitMQ-MongoLoginApplication",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "amqp": "*",
-    "crypto": "0.0.3",
-    "fs": "0.0.2",
+    "amqp": "^0.2.7",
+    "crypto": "^1.0.1",
+    "fs": "^0.0.2",
     "gridfs-stream": "^1.1.1",
-    "mongodb": "*",
-    "mongoose": "^5.7.5",
+    "mongodb": "^5.7.0",
+    "mongoose": "^4.1.12",
     "mongoose-auto-increment": "^5.0.1",
-    "mysql": "^2.9.0",
-    "passport": "^0.3.2",
-    "passport-local-sequelize": "^0.6.0",
-    "request": "*",
-    "sequelize": "^6.3.5",
-    "underscore": "*"
+    "mysql": "^2.18.1",
+    "mysql2": "^3.6.0",
+    "passport": "^0.6.0",
+    "passport-local-sequelize": "^0.9.1",
+    "request": "^2.88.2",
+    "sequelize": "^6.11.0",
+    "underscore": "^1.13.6"
   }
 }

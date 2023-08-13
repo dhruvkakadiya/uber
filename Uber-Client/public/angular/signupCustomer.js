@@ -125,6 +125,7 @@ signupCustomer.controller('signupCustomer', function($scope, $http) {
 					window.location.assign("/loginCustomer");
 				}
 			}).error(function(error) {
+				alert('something is wrong!');
 				$scope.unexpected_error = "something is wrong!";
 			});
 

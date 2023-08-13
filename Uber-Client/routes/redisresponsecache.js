@@ -1,16 +1,21 @@
-var redis = require('redis');
-var client = redis.createClient(); //creates a new client 
+const redis = require('redis');
 
-client.on("connect", function () {
-    console.log('Redis is Connected!!!!');
-});
+class RedisResponseCache {
+    constructor() {
+        this.client = redis.createClient();
 
-client.on("error", function (err) {
-    console.log("Error in Redis	client " + err);
-});
+        this.client.on('connect', () => {
+            console.log('Redis is Connected!!!!');
+        });
 
-function getClient (){
-	  return client;	
+        this.client.on('error', (err) => {
+            console.log('Error in Redis client: ' + err);
+        });
+    }
+
+    getClient() {
+        return this.client;
+    }
 }
 
-exports.getClient=getClient;
+module.exports = new RedisResponseCache();
