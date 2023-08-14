@@ -1,10 +1,10 @@
-var amqp = require('amqp')
-, crypto = require('crypto');
+const amqp = require('amqp');
+const crypto = require('crypto');
 
-var TIMEOUT=800000; //time to wait for response in ms
-var CONTENT_TYPE='application/json';
-var CONTENT_ENCODING='utf-8';
-var self;
+const TIMEOUT= 800000; //time to wait for response in ms
+const CONTENT_TYPE='application/json';
+const CONTENT_ENCODING='utf-8';
+let self;
 
 exports = module.exports = AmqpRpc;
 
@@ -20,10 +20,10 @@ AmqpRpc.prototype.makeRequest = function(queue_name, content, callback){
 
 	self = this;
 	//generate a unique correlation id for this call
-	var correlationId = crypto.randomBytes(16).toString('hex');
+	const correlationId = crypto.randomBytes(16).toString('hex');
 
 	//create a timeout for what should happen if we don't get a response
-	var tId = setTimeout(function(corr_id){
+	const tId = setTimeout(function(corr_id){
 		//if this ever gets called we didn't get a response in a 
 		//timely fashion
 		callback(new Error("timeout " + corr_id));
@@ -68,11 +68,11 @@ AmqpRpc.prototype.setupResponseQueue = function(next){
 		//subscribe to messages
 		q.subscribe(function(message, headers, deliveryInfo, m){
 			//get the correlationId
-			var correlationId = m.correlationId;
+			const correlationId = m.correlationId;
 			//is it a response to a pending request
 			if(correlationId in self.requests){
 				//retreive the request entry
-				var entry = self.requests[correlationId];
+				const entry = self.requests[correlationId];
 				//make sure we don't timeout by clearing it
 				clearTimeout(entry.timeout);
 				//delete the entry from hash

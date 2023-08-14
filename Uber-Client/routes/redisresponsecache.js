@@ -1,16 +1,16 @@
-var redis = require('redis');
-var client = redis.createClient(); //creates a new client 
+const redis = require('redis');
 
-client.on("connect", function () {
-    console.log('Redis is Connected!!!!');
-});
+let redisClient;
 
-client.on("error", function (err) {
-    console.log("Error in Redis	client " + err);
-});
+(async () => {
+    redisClient = redis.createClient();
+    redisClient.on('error', err => console.log('Redis Client Error', err));
 
-function getClient (){
-	  return client;	
+    await redisClient.connect();
+})();
+
+function getClient() {
+    return redisClient;
 }
 
 exports.getClient=getClient;

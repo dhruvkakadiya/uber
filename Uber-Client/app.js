@@ -1,68 +1,81 @@
-
 /**
  * Module dependencies.
  */
+let express = require('express');
+let http = require('http');
+let app = express();
+let server = http.createServer(app);
+let { Server } = require("socket.io");
+let io = new Server(server);
+let path = require('path');
+let session = require("express-session");
+let mongoStore = require("connect-mongo")(session);
+let mongo = require("./routes/mongo");
+const redisResponseCache = require('./routes/redisresponsecache');
+//const compress = require('compression');
+let multer = require('multer');
 
-var express = require('express')
-    , http = require('http')
-    , multer = require('multer')
-    , app = express()
-    //, passport = require('passport')
-    , server = http.Server(app)
-    , routes = require('./routes')
-    , io = require('./routes/socket').listen(server)
-    , path = require('path')
-    , index = require('./routes/index')
-    , customer = require('./routes/customer')
-    , admin = require('./routes/admin')
-    , driver = require('./routes/driver')
-    , logout = require('./routes/logout')
-    , ride = require('./routes/ride')
-    , billing = require('./routes/billing')
-    , expressSession = require("express-session")
-    , mongoStore = require("connect-mongo")(expressSession)
-    , mongo = require("./routes/mongo")
-    , compress = require('compression');
+// Routes
+let routes = require("./routes");
+let index = require('./routes/index');
+//const io = require('./routes/socket').listen(server);
+let customer = require('./routes/customer');
+let admin = require('./routes/admin');
+let driver = require('./routes/driver');
+let logout = require('./routes/logout');
+let ride = require('./routes/ride');
+let billing = require('./routes/billing');
 
 
-//mongoDB session URL
-var mongoSessionConnectURL = "mongodb://localhost:27017/sessions";
+// Configuration
+let mongoSessionConnectURL = "mongodb://localhost:27017/sessions";
 
-app.configure(function(){
-    app.set('port', process.env.PORT || 3000);
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'ejs');
-    //app.use(compress()); //Compression
-    app.use(express.static(path.join(__dirname, 'public')));
-    app.use('/uploads', express.static(__dirname + "/uploads"));
-    app.use(multer({dest: './uploads/'}));
-    app.use(express.favicon());
-    app.use(express.logger('dev'));
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(expressSession({
-        secret : 'mySECRETMongoDBString',
-        resave : false, // don't save session if unmodified
-        saveUninitialized : false, // don't create session until something stored
-        duration : 300 * 60 * 1000,
-        activeDuration : 50 * 60 * 1000,
-        store : new mongoStore({
-            url : mongoSessionConnectURL
-        })
-    }));
+// Middleware
+app.set('port', process.env.PORT || 3000);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+//app.use(compress()); //Compression
+app.use(express.static(path.join(__dirname, 'public')));
+//app.use('/uploads', express.static(__dirname + "/uploads"));
+//app.use(multer({dest: './uploads/'}));
+//app.use(express.favicon());
+//app.use(express.logger('dev'));
+//app.use(express.bodyParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+//app.use(express.methodOverride());
+app.use(session({
+    secret : 'mySECRETMongoDBString',
+    resave : false, // don't save session if unmodified
+    saveUninitialized : false, // don't create session until something stored
+    duration : 300 * 60 * 1000,
+    activeDuration : 50 * 60 * 1000,
+    store : new mongoStore({
+        url : mongoSessionConnectURL
+    })
+}));
 
-    //app.use(passport.initialize());
-    //app.use(passport.expressSession());
+async function startServer() {
+    //connect to the mongo collection session and then createServer
+    await mongo.connect(mongoSessionConnectURL);
+    console.log('Connected to MongoDB successfully.');
+    // Initialize the Redis client
+    const redis = redisResponseCache.getClient();
+    const value = await redis.get("foo");
+    console.log("Redis response: " + value);
+    // Start the server once the connection is established
+    server.listen(app.get('port'), () => {
+        console.log('Express server listening on port ' + app.get('port'));
+    });
+}
 
-    app.use(app.router);
-});
+startServer();
 
-app.configure('development', function(){
-    app.use(express.errorHandler());
-});
+//app.use(app.router);
+//app.use(express.errorHandler());
 
-app.get('/', routes.index);
-app.get('/login',routes.login);
+app.get('/', index.index);
+app.get('/login',index.login);
 app.get('/loginCustomer',customer.login);
 app.get('/signupCustomer',customer.index);
 app.get('/loginDriver',driver.login);
@@ -153,8 +166,8 @@ app.get('/ignoreCustomers',admin.ignoreCustomers);
 app.get('/customerRideBill', customer.customerRideBill);
 app.get('/driverRideBill', driver.driverRideBill);
 
-app.get('/requestRide',index.maps);
-app.get('/requestedRide',driver.requestedRide);
+app.get('/requestRide', index.maps);
+//app.get('/requestedRide',index.requestedRide);
 
 app.post('/updateDriverDetails', driver.updateDriverDetails);
 
@@ -163,9 +176,9 @@ app.get('/getDriverImage', driver.getDriverImage);
 
 app.get('/getBill', billing.getBill);
 
-app.get('/mapAnalysis',index.chartRender);
-app.get('/customerAnalysis',index.customerAnalysisChart);
-app.get('/driverAnalysis',index.driverAnalysisChart);
+app.get('/mapAnalysis',routes.chartRender);
+app.get('/customerAnalysis',routes.customerAnalysisChart);
+app.get('/driverAnalysis',routes.driverAnalysisChart);
 
 app.get('/cityList', ride.cityList);
 app.get('/cityRides', ride.cityRides);
@@ -183,11 +196,3 @@ app.get('/errorCustomer', customer.errorCustomer);
 app.get('/customerRegistertationFailed', customer.customerRegistertationFailed);
 app.get('/errorDriver', driver.errorDriver);
 app.get('/driverRegistertationFailed', driver.driverRegistertationFailed);
-
-//connect to the mongo collection session and then createServer
-mongo.connect(mongoSessionConnectURL, function() {
-    console.log('Connected to mongo at: ' + mongoSessionConnectURL);
-        server.listen(app.get('port'), function () {
-            console.log('Express server listening on port ' + app.get('port'));
-        });
-});

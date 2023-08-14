@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="ngMap" ng-init="driverId='<%= driverId%>'" ng-bind-html="angularSymbol">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -70,7 +70,7 @@
 </head>
 
 <body ng-app="drivers" ng-controller="socket" ng-init="driverId='<%= driverId%>'">
-<% include navbar.ejs %>
+<%- include('navbar.ejs') %>
 
 
 <div class="container-fluid">
@@ -275,7 +275,12 @@
 
 </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+    var app = angular.module('ngMap', []);
+    app.config(['$interpolateProvider', function($interpolateProvider) {
+        $interpolateProvider.startSymbol('{[{').endSymbol('}]}');
+    }]);
+</script>
 
 </body>
 </html>

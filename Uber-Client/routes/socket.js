@@ -1,10 +1,10 @@
 
-var socketio = require('socket.io');
+const socket = require('socket.io');
 
-var io;
+let io;
 
 module.exports.listen = function(app){
-    io = socketio.listen(app);
+    io = new socket.Server(app);
 
     io.on('connection', function(socket){
         console.info('New client connected (id=' + socket.id + ').');
