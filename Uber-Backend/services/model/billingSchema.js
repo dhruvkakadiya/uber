@@ -1,15 +1,10 @@
 //creating billing model
 
-var mongoose = require('mongoose');
-
-var connection = mongoose.createConnection("mongodb://localhost:27017/neuber");
-var Schema = mongoose.Schema;
-var autoIncrement = require('mongoose-auto-increment');
-autoIncrement.initialize(connection);
+const mongoose = require('mongoose');
 
 //create billing and related schema using mongoose
 
-var billingSchema = new Schema({
+const billingSchema = new mongoose.Schema({
 	billingId: {type: String, required: true},
 	rideId: {type: String, required: true},
 	rideDate:{type: String, required: true},
@@ -25,15 +20,37 @@ var billingSchema = new Schema({
 	versionKey : false
 });
 
-//create Billings model from schema
-var Billings = mongoose.model('Billings', billingSchema);
-
+/*
 billingSchema.plugin(autoIncrement.plugin, {
 	model: 'Billings',
 	field: 'billingId',
 	startAt: 1,
 	incrementBy: 1
 });
+*/
 
+// Pre-save middleware to assign a unique billingId based on current count
+billingSchema.pre('save', async function (next) {
+	if (!this.isNew) {
+		return next(); // Do nothing if the document is being updated
+	}
+
+	try {
+		const Counters = mongoose.model('Counters');
+		const counter = await Counters.findOneAndUpdate(
+			{ _id: 'billingId' },
+			{ $inc: { sequenceValue: 1 } },
+			{ new: true, upsert: true }
+		);
+
+		this.billingId = counter.sequenceValue.toString();
+		next();
+	} catch (error) {
+		return next(error);
+	}
+});
+
+//create Billings model from schema
+const Billings = mongoose.model('Billings', billingSchema);
 
 exports.Billings = Billings;

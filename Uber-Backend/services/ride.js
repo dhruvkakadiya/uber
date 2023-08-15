@@ -46,7 +46,7 @@ exports.createRide = function (msg, callback) {
     //console.log("customer email" + customerId);
     //console.log("driver email " + driverId);
 
-    Customers.findOne({email: customerId, verifyStatus: true}, function (err, customer) {
+    Customers.findOne({email: customerId, verifyStatus: true}).then(function (err, customer) {
         if (err) {
             json_responses = requestGen.responseGenerator(500, {message: "Customer not found or customer isn't approved"});
             callback(null, json_responses);
@@ -56,8 +56,7 @@ exports.createRide = function (msg, callback) {
             console.log("customer " + JSON.stringify(customer));
 
             if (customer) {
-
-                Drivers.findOne({email: driverId, isBusy: false}, function (err, driver) {
+                Drivers.findOne({email: driverId, isBusy: false}).then(function (err, driver) {
 
                     if (err) {
                         json_responses = requestGen.responseGenerator(500, {message: "Sorry Driver Not found or busy right now."});
@@ -115,7 +114,6 @@ exports.createRide = function (msg, callback) {
                             callback(null, json_responses);
                         }
                     }
-
                 });
             }
             else {
@@ -261,7 +259,7 @@ exports.endRide = function (msg, callback) {
             var latitude = location.lat;
             var longitude = location.lng;
 
-
+            /*
             Rides.findOne({rideId: rideId}, function (err, ride) {
                 if (err) {
                     json_response = requestGen.responseGenerator(500, {message: 'Error'});
@@ -312,6 +310,7 @@ exports.endRide = function (msg, callback) {
                     }
                 }
             });
+             */
         }
     });
 

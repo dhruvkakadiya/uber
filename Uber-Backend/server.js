@@ -2,7 +2,8 @@
  * New node file
  */
 // super simple rpc server example
-var amqp = require('amqp'), util = require('util');
+var amqp = require('amqp');
+var util = require('util');
 
 var customer = require('./services/customer');
 var driver = require('./services/driver');
@@ -14,13 +15,30 @@ var cnn = amqp.createConnection({
 	host : '127.0.0.1'
 });
 
-var mongoose = require('mongoose');
+
 //var options = {
 //	server: { poolSize: 5 }
 //};
-var connection = mongoose.connect("mongodb://localhost:27017/neuber");
 
-cnn.on('ready', function() {
+// help me writing proper mongoose connection code
+
+const mongoose = require('mongoose');
+const config = require('./services/commons/config');
+const option = {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	connectTimeoutMS: 5000,
+	serverSelectionTimeoutMS: 5000, // New option in the latest MongoDB driver
+	keepAlive: true,
+	keepAliveInitialDelay: 300000, // New option in the latest MongoDB driver
+};
+mongoose.connect(config.mongodbUri, option).then(
+	() => console.log("MongoDB connected!"),
+	error => console.log("MongoDB error")
+);
+const connection = mongoose.connection;
+
+	cnn.on('ready', function() {
 	console.log("listening on customer_queue");
 
 	cnn.queue('customer_queue', function(q) {

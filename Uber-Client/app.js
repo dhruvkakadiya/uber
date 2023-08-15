@@ -8,9 +8,10 @@ let server = http.createServer(app);
 let { Server } = require("socket.io");
 let io = new Server(server);
 let path = require('path');
-let session = require("express-session");
-let mongoStore = require("connect-mongo")(session);
+const session = require("express-session");
+const mongoStore = require("connect-mongo");
 let mongo = require("./routes/mongo");
+const config = require("./routes/commons/config");
 const redisResponseCache = require('./routes/redisresponsecache');
 //const compress = require('compression');
 let multer = require('multer');
@@ -25,10 +26,6 @@ let driver = require('./routes/driver');
 let logout = require('./routes/logout');
 let ride = require('./routes/ride');
 let billing = require('./routes/billing');
-
-
-// Configuration
-let mongoSessionConnectURL = "mongodb://localhost:27017/sessions";
 
 // Middleware
 app.set('port', process.env.PORT || 3000);
@@ -50,14 +47,14 @@ app.use(session({
     saveUninitialized : false, // don't create session until something stored
     duration : 300 * 60 * 1000,
     activeDuration : 50 * 60 * 1000,
-    store : new mongoStore({
-        url : mongoSessionConnectURL
+    store : mongoStore.create({
+        mongoUrl : config.sessionUri
     })
 }));
 
 async function startServer() {
     //connect to the mongo collection session and then createServer
-    await mongo.connect(mongoSessionConnectURL);
+    await mongo.connect(config.sessionUri);
     console.log('Connected to MongoDB successfully.');
     // Initialize the Redis client
     const redis = redisResponseCache.getClient();
