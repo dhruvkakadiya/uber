@@ -1,6 +1,4 @@
-
-
-# Uber-Backend-RabbitMQ
+# Uber-Backend
 
 
 
@@ -10,8 +8,3 @@
 
 ## Developing
 
-
-
-### Tools
-
-Created with IntelliJ WebStorm
