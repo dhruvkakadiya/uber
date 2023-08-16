@@ -1,5 +1,3 @@
-
-
 # Uber-Client
 
 
@@ -10,8 +8,3 @@
 
 ## Developing
 
-
-
-### Tools
-
-Created with WebStorm
