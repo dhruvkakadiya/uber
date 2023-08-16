@@ -1,7 +1,7 @@
 
 var mq_client = require('../rpc/client');
 var requestGen = require('./commons/responseGenerator');
-
+const config = require("./commons/config");
 
 var sessionEmail;
 
@@ -687,7 +687,7 @@ exports.addDriverImage = function(req, res){
     var mongoose = require('mongoose');
     var Schema = mongoose.Schema;
 
-    var conn = mongoose.createConnection('mongodb://localhost:27017/neuber');
+    var conn = mongoose.createConnection(config.mongodbUri);
     var fs = require('fs');
 
     var Grid = require('gridfs-stream');
@@ -727,7 +727,7 @@ exports.getDriverImage = function (req, res) {
     var mongoose = require('mongoose');
     var Schema = mongoose.Schema;
 
-    var conn = mongoose.createConnection('mongodb://localhost:27017/neuber');
+    var conn = mongoose.createConnection(config.mongodbUri);
     var fs = require('fs');
 
     var Grid = require('gridfs-stream');

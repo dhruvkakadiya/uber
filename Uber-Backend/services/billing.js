@@ -157,7 +157,7 @@ exports.billingSearch = function(msg, callback){
 
 	Billings.find({ $or : [ { rideDate : new RegExp(searchText, 'i')},
 		{ pickUpLocation : new RegExp(searchText, 'i') },{ dropOffLocation : new RegExp(searchText, 'i') },
-		{ customerId : new RegExp(searchText, 'i') },{ driverId : new RegExp(searchText, 'i') } ] }, function(err, docs) {
+		{ customerId : new RegExp(searchText, 'i') },{ driverId : new RegExp(searchText, 'i') } ] }).then(function(err, docs) {
 		if (err) {
 			json_response = requestGen.responseGenerator(401, null);
 		} else {
@@ -212,21 +212,20 @@ exports.getBill = function(msg, callback){
 
 	var json_responses;
 
-	Billings.findOne({billingId: billId}, function(err, bill){
+	Billings.findOne({billingId: billId}).then(function(err, bill){
 		if (err) {
 			json_responses = requestGen.responseGenerator(500, {message: 'Error in Bill Finding'});
 			callback(null, json_responses);
 		}
-		else{
-			if(bill){
+		else {
+			if(bill) {
 				json_responses = requestGen.responseGenerator(200, bill);
 				callback(null, json_responses);
 			}
-			else{
+			else {
 				json_responses = requestGen.responseGenerator(500, {message: 'No Bill Found'});
 				callback(null, json_responses);
 			}
 		}
 	});
-
 };

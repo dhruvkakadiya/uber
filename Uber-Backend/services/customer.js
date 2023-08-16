@@ -1,6 +1,7 @@
 //customer
 var customerSchema = require('./model/customerSchema');
 var requestGen = require('./commons/responseGenerator');
+const config = require('./commons/config');
 
 var Customer = customerSchema.Customer; //mysql instance
 var Customers = customerSchema.Customers; //mongoDB instance
@@ -93,7 +94,7 @@ exports.deleteCustomer = function(msg, callback){
 
     Customer.destroy({where: {email: email}}).then(function(){
 
-        Customers.findOneAndRemove({email: email}, function(err){
+        Customers.findOneAndRemove({email: email}).then(function(err){
             if(err){
                 json_responses = requestGen.responseGenerator(500, {message: 'customer delete failed'});
             }
@@ -201,7 +202,7 @@ exports.addImagesToRide = function(msg, callback){
     var mongoose = require('mongoose');
     var Schema = mongoose.Schema;
 
-    var conn = mongoose.createConnection('mongodb://localhost:27017/neuber');
+    var conn = mongoose.createConnection(config.mongodbUri);
     var fs = require('fs');
 
     var Grid = require('gridfs-stream');
@@ -255,7 +256,7 @@ exports.getImagesOfRide = function(msg, callback){
     var mongoose = require('mongoose');
     var Schema = mongoose.Schema;
 
-    var conn = mongoose.createConnection('mongodb://localhost:27017/neuber');
+    var conn = mongoose.createConnection(config.mongodbUri);
     var fs = require('fs');
 
     var Grid = require('gridfs-stream');
