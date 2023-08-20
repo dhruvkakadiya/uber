@@ -6,8 +6,8 @@
  *  service for [Google StreetViewService]
  *  (https://developers.google.com/maps/documentation/javascript/streetview)
  */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
   var $q;
 
   /**
@@ -22,11 +22,13 @@
    *   });
    * @returns {HttpPromise} Future object
    */
-  var getPanorama = function(map, latlng) {
+  var getPanorama = function (map, latlng) {
     latlng = latlng || map.getCenter();
     var deferred = $q.defer();
     var svs = new google.maps.StreetViewService();
-    svs.getPanoramaByLocation( (latlng||map.getCenter), 100,
+    svs.getPanoramaByLocation(
+      latlng || map.getCenter,
+      100,
       function (data, status) {
         // if streetView available
         if (status === google.maps.StreetViewStatus.OK) {
@@ -36,7 +38,7 @@
           deferred.resolve(false);
           //deferred.reject('Geocoder failed due to: '+ status);
         }
-      }
+      },
     );
     return deferred.promise;
   };
@@ -49,22 +51,22 @@
    * @example
    *   StreetView.setPanorama(map, panoId);
    */
-  var setPanorama = function(map, panoId) {
-    var svp = new google.maps.StreetViewPanorama(
-      map.getDiv(), {enableCloseButton: true}
-    );
+  var setPanorama = function (map, panoId) {
+    var svp = new google.maps.StreetViewPanorama(map.getDiv(), {
+      enableCloseButton: true,
+    });
     svp.setPano(panoId);
   };
 
-  var StreetView = function(_$q_) {
+  var StreetView = function (_$q_) {
     $q = _$q_;
 
     return {
       getPanorama: getPanorama,
-      setPanorama: setPanorama
+      setPanorama: setPanorama,
     };
   };
-  StreetView.$inject = ['$q'];
+  StreetView.$inject = ["$q"];
 
-  angular.module('ngMap').service('StreetView', StreetView);
+  angular.module("ngMap").service("StreetView", StreetView);
 })();

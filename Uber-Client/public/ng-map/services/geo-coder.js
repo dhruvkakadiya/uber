@@ -5,8 +5,8 @@
  *   Provides [defered/promise API](https://docs.angularjs.org/api/ng/service/$q)
  *   service for Google Geocoder service
  */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
   var $q;
   /**
    * @memberof GeoCoder
@@ -20,7 +20,7 @@
    * ```
    * @returns {HttpPromise} Future object
    */
-  var geocodeFunc = function(options) {
+  var geocodeFunc = function (options) {
     var deferred = $q.defer();
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode(options, function (results, status) {
@@ -33,13 +33,13 @@
     return deferred.promise;
   };
 
-  var GeoCoder = function(_$q_) {
+  var GeoCoder = function (_$q_) {
     $q = _$q_;
     return {
-      geocode : geocodeFunc
+      geocode: geocodeFunc,
     };
   };
-  GeoCoder.$inject = ['$q'];
+  GeoCoder.$inject = ["$q"];
 
-  angular.module('ngMap').service('GeoCoder', GeoCoder);
+  angular.module("ngMap").service("GeoCoder", GeoCoder);
 })();

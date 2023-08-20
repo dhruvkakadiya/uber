@@ -24,50 +24,64 @@
  *  controller, and we use some css classes to change the shape button
  *  to a remove button (<div>X</div>) and have the remove operation in our own controller.
  */
-(function() {
-  'use strict';
-  angular.module('ngMap').directive('drawingManager', [
-    'Attr2MapOptions', function(Attr2MapOptions) {
-    var parser = Attr2MapOptions;
+(function () {
+  "use strict";
+  angular.module("ngMap").directive("drawingManager", [
+    "Attr2MapOptions",
+    function (Attr2MapOptions) {
+      var parser = Attr2MapOptions;
 
-    return {
-      restrict: 'E',
-      require: ['?^map','?^ngMap'],
+      return {
+        restrict: "E",
+        require: ["?^map", "?^ngMap"],
 
-      link: function(scope, element, attrs, mapController) {
-        mapController = mapController[0]||mapController[1];
+        link: function (scope, element, attrs, mapController) {
+          mapController = mapController[0] || mapController[1];
 
-        var filtered = parser.filter(attrs);
-        var options = parser.getOptions(filtered);
-        var controlOptions = parser.getControlOptions(filtered);
-        var events = parser.getEvents(scope, filtered);
+          var filtered = parser.filter(attrs);
+          var options = parser.getOptions(filtered);
+          var controlOptions = parser.getControlOptions(filtered);
+          var events = parser.getEvents(scope, filtered);
 
-        console.log("filtered", filtered, "options", options, 'controlOptions', controlOptions, 'events', events);
+          console.log(
+            "filtered",
+            filtered,
+            "options",
+            options,
+            "controlOptions",
+            controlOptions,
+            "events",
+            events,
+          );
 
-        /**
-         * set options
-         */
-        var drawingManager = new google.maps.drawing.DrawingManager({
-          drawingMode: options.drawingmode,
-          drawingControl: options.drawingcontrol,
-          drawingControlOptions: controlOptions.drawingControlOptions,
-          circleOptions:options.circleoptions,
-          markerOptions:options.markeroptions,
-          polygonOptions:options.polygonoptions,
-          polylineOptions:options.polylineoptions,
-          rectangleOptions:options.rectangleoptions
-        });
+          /**
+           * set options
+           */
+          var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: options.drawingmode,
+            drawingControl: options.drawingcontrol,
+            drawingControlOptions: controlOptions.drawingControlOptions,
+            circleOptions: options.circleoptions,
+            markerOptions: options.markeroptions,
+            polygonOptions: options.polygonoptions,
+            polylineOptions: options.polylineoptions,
+            rectangleOptions: options.rectangleoptions,
+          });
 
+          /**
+           * set events
+           */
+          for (var eventName in events) {
+            google.maps.event.addListener(
+              drawingManager,
+              eventName,
+              events[eventName],
+            );
+          }
 
-        /**
-         * set events
-         */
-        for (var eventName in events) {
-          google.maps.event.addListener(drawingManager, eventName, events[eventName]);
-        }
-
-        mapController.addObject('mapDrawingManager', drawingManager);
-      }
-    }; // return
-  }]);
+          mapController.addObject("mapDrawingManager", drawingManager);
+        },
+      }; // return
+    },
+  ]);
 })();
