@@ -13,38 +13,47 @@
  *     </dynamic-maps-engine-layer>
  *    </map>
  */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
-  angular.module('ngMap').directive('dynamicMapsEngineLayer', [
-    'Attr2MapOptions', function(Attr2MapOptions) {
-    var parser = Attr2MapOptions;
+  angular.module("ngMap").directive("dynamicMapsEngineLayer", [
+    "Attr2MapOptions",
+    function (Attr2MapOptions) {
+      var parser = Attr2MapOptions;
 
-    var getDynamicMapsEngineLayer = function(options, events) {
-      var layer = new google.maps.visualization.DynamicMapsEngineLayer(options);
+      var getDynamicMapsEngineLayer = function (options, events) {
+        var layer = new google.maps.visualization.DynamicMapsEngineLayer(
+          options,
+        );
 
-      for (var eventName in events) {
-        google.maps.event.addListener(layer, eventName, events[eventName]);
-      }
+        for (var eventName in events) {
+          google.maps.event.addListener(layer, eventName, events[eventName]);
+        }
 
-      return layer;
-    };
+        return layer;
+      };
 
-    return {
-      restrict: 'E',
-      require: ['?^map','?^ngMap'],
+      return {
+        restrict: "E",
+        require: ["?^map", "?^ngMap"],
 
-      link: function(scope, element, attrs, mapController) {
-        mapController = mapController[0]||mapController[1];
+        link: function (scope, element, attrs, mapController) {
+          mapController = mapController[0] || mapController[1];
 
-        var filtered = parser.filter(attrs);
-        var options = parser.getOptions(filtered);
-        var events = parser.getEvents(scope, filtered, events);
-        console.log('dynamic-maps-engine-layer options', options, 'events', events);
+          var filtered = parser.filter(attrs);
+          var options = parser.getOptions(filtered);
+          var events = parser.getEvents(scope, filtered, events);
+          console.log(
+            "dynamic-maps-engine-layer options",
+            options,
+            "events",
+            events,
+          );
 
-        var layer = getDynamicMapsEngineLayer(options, events);
-        mapController.addObject('mapsEngineLayers', layer);
-      }
-     }; // return
-  }]);
+          var layer = getDynamicMapsEngineLayer(options, events);
+          mapController.addObject("mapsEngineLayers", layer);
+        },
+      }; // return
+    },
+  ]);
 })();

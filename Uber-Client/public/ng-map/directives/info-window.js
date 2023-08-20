@@ -47,19 +47,28 @@
  *  </map>
  */
 /* global google */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
-  var infoWindow = function(Attr2MapOptions, $compile, $timeout, $parse, NgMap)  {
+  var infoWindow = function (
+    Attr2MapOptions,
+    $compile,
+    $timeout,
+    $parse,
+    NgMap,
+  ) {
     var parser = Attr2MapOptions;
 
-    var getInfoWindow = function(options, events, element) {
+    var getInfoWindow = function (options, events, element) {
       var infoWindow;
 
       /**
        * set options
        */
-      if (options.position && !(options.position instanceof google.maps.LatLng)) {
+      if (
+        options.position &&
+        !(options.position instanceof google.maps.LatLng)
+      ) {
         delete options.position;
       }
       infoWindow = new google.maps.InfoWindow(options);
@@ -72,7 +81,11 @@
       }
       for (var eventName in events) {
         if (eventName) {
-          google.maps.event.addListener(infoWindow, eventName, events[eventName]);
+          google.maps.event.addListener(
+            infoWindow,
+            eventName,
+            events[eventName],
+          );
         }
       }
 
@@ -84,10 +97,10 @@
       if (angular.element(template).length != 1) {
         throw "info-window working as a template must have a container";
       }
-      infoWindow.__template = template.replace(/\s?ng-non-bindable[='"]+/,"");
+      infoWindow.__template = template.replace(/\s?ng-non-bindable[='"]+/, "");
 
-      infoWindow.__open = function(map, scope, anchor) {
-        $timeout(function() {
+      infoWindow.__open = function (map, scope, anchor) {
+        $timeout(function () {
           anchor && (scope.anchor = anchor);
           var el = $compile(infoWindow.__template)(scope);
           infoWindow.setContent(el[0]);
@@ -106,24 +119,27 @@
       return infoWindow;
     };
 
-    var linkFunc = function(scope, element, attrs, mapController) {
-      mapController = mapController[0]||mapController[1];
+    var linkFunc = function (scope, element, attrs, mapController) {
+      mapController = mapController[0] || mapController[1];
 
-      element.css('display','none');
+      element.css("display", "none");
 
       var orgAttrs = parser.orgAttributes(element);
       var filtered = parser.filter(attrs);
       var options = parser.getOptions(filtered);
       var events = parser.getEvents(scope, filtered);
-      console.log('infoWindow', 'options', options, 'events', events);
+      console.log("infoWindow", "options", options, "events", events);
 
       var address;
-      if (options.position && !(options.position instanceof google.maps.LatLng)) {
+      if (
+        options.position &&
+        !(options.position instanceof google.maps.LatLng)
+      ) {
         address = options.position;
       }
       var infoWindow = getInfoWindow(options, events, element);
       if (address) {
-        NgMap.getGeoLocation(address).then(function(latlng) {
+        NgMap.getGeoLocation(address).then(function (latlng) {
           infoWindow.setPosition(latlng);
           infoWindow.__open(mapController.map, scope, latlng);
           var geoCallback = attrs.geoCallback;
@@ -131,31 +147,34 @@
         });
       }
 
-      mapController.addObject('infoWindows', infoWindow);
+      mapController.addObject("infoWindows", infoWindow);
       mapController.observeAttrSetObj(orgAttrs, attrs, infoWindow);
 
-      mapController.map.showInfoWindow = mapController.map.showInfoWindow ||
-        function(p1, p2, p3) { //event, id, marker
-          var id = typeof p1 == 'string' ? p1 : p2;
-          var marker = typeof p1 == 'string' ? p2 : p3;
-          if (typeof marker == 'string') {
+      mapController.map.showInfoWindow =
+        mapController.map.showInfoWindow ||
+        function (p1, p2, p3) {
+          //event, id, marker
+          var id = typeof p1 == "string" ? p1 : p2;
+          var marker = typeof p1 == "string" ? p2 : p3;
+          if (typeof marker == "string") {
             marker = mapController.map.markers[marker];
           }
 
           var infoWindow = mapController.map.infoWindows[id];
-          var anchor = marker ? marker : (this.getPosition ? this : null);
+          var anchor = marker ? marker : this.getPosition ? this : null;
           infoWindow.__open(mapController.map, scope, anchor);
-          if(mapController.singleInfoWindow) {
-            if(mapController.lastInfoWindow) {
+          if (mapController.singleInfoWindow) {
+            if (mapController.lastInfoWindow) {
               scope.hideInfoWindow(mapController.lastInfoWindow);
             }
             mapController.lastInfoWindow = id;
           }
         };
 
-      mapController.map.hideInfoWindow = mapController.map.hideInfoWindow ||
-        function(p1, p2) {
-          var id = typeof p1 == 'string' ? p1 : p2;
+      mapController.map.hideInfoWindow =
+        mapController.map.hideInfoWindow ||
+        function (p1, p2) {
+          var id = typeof p1 == "string" ? p1 : p2;
           var infoWindow = mapController.map.infoWindows[id];
           infoWindow.close();
         };
@@ -164,25 +183,28 @@
       scope.showInfoWindow = mapController.map.showInfoWindow;
       scope.hideInfoWindow = mapController.map.hideInfoWindow;
 
-      NgMap.getMap().then(function(map) {
+      NgMap.getMap().then(function (map) {
         infoWindow.visible && infoWindow.__open(map, scope);
         if (infoWindow.visibleOnMarker) {
           var markerId = infoWindow.visibleOnMarker;
           infoWindow.__open(map, scope, map.markers[markerId]);
         }
       });
-
     }; //link
 
     return {
-      restrict: 'E',
-      require: ['?^map','?^ngMap'],
-      link: linkFunc
+      restrict: "E",
+      require: ["?^map", "?^ngMap"],
+      link: linkFunc,
     };
-
   }; // infoWindow
-  infoWindow.$inject =
-    ['Attr2MapOptions', '$compile', '$timeout', '$parse', 'NgMap'];
+  infoWindow.$inject = [
+    "Attr2MapOptions",
+    "$compile",
+    "$timeout",
+    "$parse",
+    "NgMap",
+  ];
 
-  angular.module('ngMap').directive('infoWindow', infoWindow);
+  angular.module("ngMap").directive("infoWindow", infoWindow);
 })();

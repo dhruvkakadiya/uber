@@ -9,7 +9,7 @@
  * Initialize a Google map within a `<div>` tag
  *   with given options and register events
  *
- * @attr {Expression} map-initialized 
+ * @attr {Expression} map-initialized
  *   callback function when map is initialized
  *   e.g., map-initialized="mycallback(map)"
  * @attr {Expression} geo-callback if center is an address or current location,
@@ -50,16 +50,16 @@
  *   </map>
  */
 (function () {
-  'use strict';
+  "use strict";
 
   var mapDirective = function () {
     return {
-      restrict: 'AE',
-      controller: '__MapController',
-      conrollerAs: 'ngmap'
+      restrict: "AE",
+      controller: "__MapController",
+      conrollerAs: "ngmap",
     };
   };
 
-  angular.module('ngMap').directive('map', [mapDirective]);
-  angular.module('ngMap').directive('ngMap', [mapDirective]);
+  angular.module("ngMap").directive("map", [mapDirective]);
+  angular.module("ngMap").directive("ngMap", [mapDirective]);
 })();

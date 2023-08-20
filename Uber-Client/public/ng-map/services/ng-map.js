@@ -4,8 +4,8 @@
  * @description
  *  common utility service for ng-map
  */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
   var $window, $document, $q;
   var NavigatorGeolocation, Attr2MapOptions, GeoCoder, camelCaseFilter;
 
@@ -16,7 +16,7 @@
    * @function initMap
    * @param id optional, id of the map. default 0
    */
-  var initMap = function(id) {
+  var initMap = function (id) {
     var ctrl = mapControllers[id || 0];
     ctrl.initializeMap();
   };
@@ -27,21 +27,21 @@
    * @param {Hash} options optional, e.g., {id: 'foo, timeout: 5000}
    * @returns promise
    */
-  var getMap = function(options) {
+  var getMap = function (options) {
     options = options || {};
     var deferred = $q.defer();
 
     var id = options.id || 0;
     var timeout = options.timeout || 2000;
 
-    function waitForMap(timeElapsed){
-      if(mapControllers[id]){
+    function waitForMap(timeElapsed) {
+      if (mapControllers[id]) {
         deferred.resolve(mapControllers[id].map);
       } else if (timeElapsed > timeout) {
-        deferred.reject('could not find map');
+        deferred.reject("could not find map");
       } else {
-        $window.setTimeout( function(){
-          waitForMap(timeElapsed+100);
+        $window.setTimeout(function () {
+          waitForMap(timeElapsed + 100);
         }, 100);
       }
     }
@@ -56,7 +56,7 @@
    * @param mapController {__MapContoller} a map controller
    * @returns promise
    */
-  var addMap = function(mapCtrl) {
+  var addMap = function (mapCtrl) {
     var len = Object.keys(mapControllers).length;
     mapControllers[mapCtrl.map.id || len] = mapCtrl;
   };
@@ -66,7 +66,7 @@
    * @function deleteMap
    * @param mapController {__MapContoller} a map controller
    */
-  var deleteMap = function(mapCtrl) {
+  var deleteMap = function (mapCtrl) {
     var len = Object.keys(mapControllers).length - 1;
     delete mapControllers[mapCtrl.map.id || len];
   };
@@ -78,14 +78,14 @@
    * @param {String} styleProp style property name e.g. 'display'
    * @returns value of property
    */
-  var getStyle = function(el, styleProp) {
+  var getStyle = function (el, styleProp) {
     var y;
     if (el.currentStyle) {
       y = el.currentStyle[styleProp];
     } else if ($window.getComputedStyle) {
-      y = $document.defaultView.
-        getComputedStyle(el, null).
-        getPropertyValue(styleProp);
+      y = $document.defaultView
+        .getComputedStyle(el, null)
+        .getPropertyValue(styleProp);
     }
     return y;
   };
@@ -99,27 +99,27 @@
    * create a new `div` inside map tag, so that it does not touch map element
    * and disable drag event for the elmement
    */
-  var getNgMapDiv = function(ngMapEl) {
+  var getNgMapDiv = function (ngMapEl) {
     var el = $document.createElement("div");
-    var defaultStyle = ngMapEl.getAttribute('default-style');
+    var defaultStyle = ngMapEl.getAttribute("default-style");
     el.style.width = "100%";
     el.style.height = "100%";
 
     //if style is not given to the map element, set display and height
     if (defaultStyle == "true") {
-        ngMapEl.style.display = 'block';
-        ngMapEl.style.height = '300px';
+      ngMapEl.style.display = "block";
+      ngMapEl.style.height = "300px";
     } else {
-      if (getStyle(ngMapEl, 'display') != "block") {
-        ngMapEl.style.display = 'block';
+      if (getStyle(ngMapEl, "display") != "block") {
+        ngMapEl.style.display = "block";
       }
-      if (getStyle(ngMapEl, 'height').match(/^(0|auto)/)) {
-        ngMapEl.style.height = '300px';
+      if (getStyle(ngMapEl, "height").match(/^(0|auto)/)) {
+        ngMapEl.style.height = "300px";
       }
     }
 
     // disable drag event
-    el.addEventListener('dragstart', function (event) {
+    el.addEventListener("dragstart", function (event) {
       event.preventDefault();
       return false;
     });
@@ -133,28 +133,29 @@
    * @param {Hash} options geo options
    * @returns promise
    */
-  var getGeoLocation = function(string, options) {
+  var getGeoLocation = function (string, options) {
     var deferred = $q.defer();
-    if (!string || string.match(/^current/i)) { // current location
+    if (!string || string.match(/^current/i)) {
+      // current location
       NavigatorGeolocation.getCurrentPosition(options).then(
-        function(position) {
+        function (position) {
           var lat = position.coords.latitude;
           var lng = position.coords.longitude;
-          var latLng = new google.maps.LatLng(lat,lng);
+          var latLng = new google.maps.LatLng(lat, lng);
           deferred.resolve(latLng);
         },
-        function(error) {
+        function (error) {
           deferred.reject(error);
-        }
+        },
       );
     } else {
-      GeoCoder.geocode({address: string}).then(
-        function(results) {
+      GeoCoder.geocode({ address: string }).then(
+        function (results) {
           deferred.resolve(results[0].geometry.location);
         },
-        function(error) {
+        function (error) {
           deferred.reject(error);
-        }
+        },
       );
     }
 
@@ -168,18 +169,21 @@
    * @param {Object} object A Google maps object to be changed
    * @returns attribue observe function
    */
-  var observeAndSet = function(attrName, object) {
-    return function(val) {
+  var observeAndSet = function (attrName, object) {
+    return function (val) {
       if (val) {
-        console.log('observing ', object, attrName, val);
-        var setMethod = camelCaseFilter('set-'+attrName);
-        var optionValue = Attr2MapOptions.toOptionValue(val, {key: attrName});
-        console.log('setting ', object, attrName, 'with value', optionValue);
-        if (object[setMethod]) { //if set method does exist
+        console.log("observing ", object, attrName, val);
+        var setMethod = camelCaseFilter("set-" + attrName);
+        var optionValue = Attr2MapOptions.toOptionValue(val, { key: attrName });
+        console.log("setting ", object, attrName, "with value", optionValue);
+        if (object[setMethod]) {
+          //if set method does exist
           /* if an location is being observed */
-          if (attrName.match(/center|position/) &&
-            typeof optionValue == 'string') {
-            getGeoLocation(optionValue).then(function(latlng) {
+          if (
+            attrName.match(/center|position/) &&
+            typeof optionValue == "string"
+          ) {
+            getGeoLocation(optionValue).then(function (latlng) {
               object[setMethod](latlng);
             });
           } else {
@@ -190,7 +194,7 @@
     };
   };
 
-  angular.module('ngMap').provider('NgMap', function() {
+  angular.module("ngMap").provider("NgMap", function () {
     var defaultOptions = {};
     var useTinfoilShielding = false;
 
@@ -207,15 +211,19 @@
      *    });
      *  });
      */
-    this.setDefaultOptions = function(options) {
+    this.setDefaultOptions = function (options) {
       defaultOptions = options;
     };
 
-    var NgMap = function(
-        _$window_, _$document_, _$q_,
-        _NavigatorGeolocation_, _Attr2MapOptions_,
-        _GeoCoder_, _camelCaseFilter_
-      ) {
+    var NgMap = function (
+      _$window_,
+      _$document_,
+      _$q_,
+      _NavigatorGeolocation_,
+      _Attr2MapOptions_,
+      _GeoCoder_,
+      _camelCaseFilter_,
+    ) {
       $window = _$window_;
       $document = _$document_[0];
       $q = _$q_;
@@ -233,13 +241,17 @@
         getStyle: getStyle,
         getNgMapDiv: getNgMapDiv,
         getGeoLocation: getGeoLocation,
-        observeAndSet: observeAndSet
+        observeAndSet: observeAndSet,
       };
     };
     NgMap.$inject = [
-      '$window', '$document', '$q',
-      'NavigatorGeolocation', 'Attr2MapOptions',
-      'GeoCoder', 'camelCaseFilter'
+      "$window",
+      "$document",
+      "$q",
+      "NavigatorGeolocation",
+      "Attr2MapOptions",
+      "GeoCoder",
+      "camelCaseFilter",
     ];
 
     this.$get = NgMap;
