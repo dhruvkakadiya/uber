@@ -74,24 +74,24 @@
  *    [shape example](https://rawgit.com/allenhwkim/angularjs-google-maps/master/build/shape.html)
  */
 /* global google */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
-  var getShape = function(options, events) {
+  var getShape = function (options, events) {
     var shape;
 
     var shapeName = options.name;
-    delete options.name;  //remove name bcoz it's not for options
-    console.log("shape", shapeName, "options", options, 'events', events);
+    delete options.name; //remove name bcoz it's not for options
+    console.log("shape", shapeName, "options", options, "events", events);
 
     /**
      * set options
      */
-    switch(shapeName) {
+    switch (shapeName) {
       case "circle":
         if (!(options.center instanceof google.maps.LatLng)) {
-          options.center = new google.maps.LatLng(0,0);
-        } 
+          options.center = new google.maps.LatLng(0, 0);
+        }
         shape = new google.maps.Circle(options);
         break;
       case "polygon":
@@ -106,7 +106,11 @@
       case "groundOverlay":
       case "image":
         var url = options.url;
-        var opts = {opacity: options.opacity, clickable: options.clickable, id:options.id};
+        var opts = {
+          opacity: options.opacity,
+          clickable: options.clickable,
+          id: options.id,
+        };
         shape = new google.maps.GroundOverlay(url, options.bounds, opts);
         break;
     }
@@ -122,11 +126,11 @@
     return shape;
   };
 
-  var shape = function(Attr2MapOptions, $parse, NgMap) {
+  var shape = function (Attr2MapOptions, $parse, NgMap) {
     var parser = Attr2MapOptions;
 
-    var linkFunc = function(scope, element, attrs, mapController) {
-      mapController = mapController[0]||mapController[1];
+    var linkFunc = function (scope, element, attrs, mapController) {
+      mapController = mapController[0] || mapController[1];
 
       var orgAttrs = parser.orgAttributes(element);
       var filtered = parser.filter(attrs);
@@ -139,10 +143,10 @@
         address = shapeOptions.center;
       }
       var shape = getShape(shapeOptions, shapeEvents);
-      mapController.addObject('shapes', shape);
+      mapController.addObject("shapes", shape);
 
-      if (address && shapeType == 'circle') {
-        NgMap.getGeoLocation(address).then(function(latlng) {
+      if (address && shapeType == "circle") {
+        NgMap.getGeoLocation(address).then(function (latlng) {
           shape.setCenter(latlng);
           shape.centered && shape.map.setCenter(latlng);
           var geoCallback = attrs.geoCallback;
@@ -152,19 +156,18 @@
 
       //set observers
       mapController.observeAttrSetObj(orgAttrs, attrs, shape);
-      element.bind('$destroy', function() {
-        mapController.deleteObject('shapes', shape);
+      element.bind("$destroy", function () {
+        mapController.deleteObject("shapes", shape);
       });
     };
 
     return {
-      restrict: 'E',
-      require: ['?^map','?^ngMap'],
-      link: linkFunc
-     }; // return
+      restrict: "E",
+      require: ["?^map", "?^ngMap"],
+      link: linkFunc,
+    }; // return
   };
-  shape.$inject = ['Attr2MapOptions', '$parse', 'NgMap'];
+  shape.$inject = ["Attr2MapOptions", "$parse", "NgMap"];
 
-  angular.module('ngMap').directive('shape', shape);
-
+  angular.module("ngMap").directive("shape", shape);
 })();

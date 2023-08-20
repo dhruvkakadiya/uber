@@ -1,10 +1,5 @@
 # Uber-Backend
 
-
-
 ## Usage
 
-
-
 ## Developing
-

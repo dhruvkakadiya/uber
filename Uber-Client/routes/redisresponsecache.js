@@ -1,16 +1,16 @@
-const redis = require('redis');
+const redis = require("redis");
 
 let redisClient;
 
 (async () => {
-    redisClient = redis.createClient();
-    redisClient.on('error', err => console.log('Redis Client Error', err));
+  redisClient = redis.createClient();
+  redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
-    await redisClient.connect();
+  await redisClient.connect();
 })();
 
 function getClient() {
-    return redisClient;
+  return redisClient;
 }
 
-exports.getClient=getClient;
+exports.getClient = getClient;

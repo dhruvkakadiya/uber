@@ -1,10 +1,5 @@
 # Uber-Client
 
-
-
 ## Usage
 
-
-
 ## Developing
-
