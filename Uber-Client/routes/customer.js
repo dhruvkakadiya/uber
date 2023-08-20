@@ -458,7 +458,7 @@ exports.getCustomerInformation = function (req, res) {
         data: {
           searchparam: customerId,
           operation: "getCustomerInformation",
-        },
+        }
       };
 
       mq_client.make_request(

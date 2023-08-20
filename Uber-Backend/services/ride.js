@@ -369,7 +369,6 @@ exports.startRide = function (msg, callback) {
               } else {
                 if (driver) {
                   driver.isBusy = true;
-
                   driver.save().then(function (err) {
                     if (err) {
                       json_response = requestGen.responseGenerator(500, {

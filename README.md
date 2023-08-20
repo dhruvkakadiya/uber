@@ -63,3 +63,24 @@ cd uber/Uber-Client && npm install && npm start
 ```bash
 http://localhost:3000
 ```
+
+## Auto code formatting with Prettier
+
+Install [Prettier](https://prettier.io/) using npm
+
+```bash
+sudo npm -g install --save-dev --save-exact prettier
+```
+
+Apply prettier formatting to current directory
+
+```bash
+prettier . --write
+```
+
+Apply prettier formatting to specific file
+
+```bash
+prettier <filename_with_path> --write
+prettier Uber-Client/app.js --write
+```
