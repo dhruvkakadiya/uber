@@ -1,4 +1,4 @@
-name: Check JavaScript,css and md for conformance with Prettier
+name: Check JavaScript, CSS, and Markdown files for conformance with Prettier
 
 # This action works with pull requests and pushes
 on:
@@ -17,9 +17,12 @@ jobs:
         with:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.head_ref }}
+          # This is important to fetch the changes to the previous commit
+          fetch-depth: 0
 
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
           # This part is also where you can pass other options, for example:
           prettier_options: --write **/*.{js,md,css}
+          only_changed: True
