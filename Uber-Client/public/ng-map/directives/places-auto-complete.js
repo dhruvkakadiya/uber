@@ -16,51 +16,57 @@
  *   <input places-auto-complete types="['geocode']" on-place-changed="myCallback(place)" />
  */
 /* global google */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
-  var placesAutoComplete = function(Attr2MapOptions, $timeout) {
+  var placesAutoComplete = function (Attr2MapOptions, $timeout) {
     var parser = Attr2MapOptions;
 
-    var linkFunc = function(scope, element, attrs, ngModelCtrl) {
-      if (attrs.placesAutoComplete ==='false') {
+    var linkFunc = function (scope, element, attrs, ngModelCtrl) {
+      if (attrs.placesAutoComplete === "false") {
         return false;
       }
       var filtered = parser.filter(attrs);
       var options = parser.getOptions(filtered);
       var events = parser.getEvents(scope, filtered);
-      console.log('autocomplete options', options, 'events', events);
-      var autocomplete = new google.maps.places.Autocomplete(element[0], options);
+      console.log("autocomplete options", options, "events", events);
+      var autocomplete = new google.maps.places.Autocomplete(
+        element[0],
+        options,
+      );
       for (var eventName in events) {
-        google.maps.event.addListener(autocomplete, eventName, events[eventName]);
+        google.maps.event.addListener(
+          autocomplete,
+          eventName,
+          events[eventName],
+        );
       }
 
-      var updateModel = function() {
-        $timeout(function(){
+      var updateModel = function () {
+        $timeout(function () {
           ngModelCtrl && ngModelCtrl.$setViewValue(element.val());
-        },100);
+        }, 100);
       };
-      google.maps.event.addListener(autocomplete, 'place_changed', updateModel);
-      element[0].addEventListener('change', updateModel);
+      google.maps.event.addListener(autocomplete, "place_changed", updateModel);
+      element[0].addEventListener("change", updateModel);
 
-      attrs.$observe('types', function(val) {
+      attrs.$observe("types", function (val) {
         if (val) {
-          console.log('observing types', val);
-          var optionValue = parser.toOptionValue(val, {key: 'types'});
-          console.log('setting types with value', optionValue);
+          console.log("observing types", val);
+          var optionValue = parser.toOptionValue(val, { key: "types" });
+          console.log("setting types with value", optionValue);
           autocomplete.setTypes(optionValue);
         }
       });
     };
 
     return {
-      restrict: 'A',
-      require: '?ngModel',
-      link: linkFunc
+      restrict: "A",
+      require: "?ngModel",
+      link: linkFunc,
     };
   };
 
-  placesAutoComplete.$inject = ['Attr2MapOptions', '$timeout'];
-  angular.module('ngMap').directive('placesAutoComplete', placesAutoComplete);
-
+  placesAutoComplete.$inject = ["Attr2MapOptions", "$timeout"];
+  angular.module("ngMap").directive("placesAutoComplete", placesAutoComplete);
 })();

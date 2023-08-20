@@ -25,12 +25,12 @@
  *  </map>
  *
  */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
   var parser, $compile, NgMap;
 
-  var linkFunc = function(scope, element, attrs, mapController) {
-    mapController = mapController[0]||mapController[1];
+  var linkFunc = function (scope, element, attrs, mapController) {
+    mapController = mapController[0] || mapController[1];
     var filtered = parser.filter(attrs);
     var options = parser.getOptions(filtered);
     var events = parser.getEvents(scope, filtered);
@@ -46,27 +46,30 @@
      * set events
      */
     for (var eventName in events) {
-      google.maps.event.addDomListener(customControlEl, eventName, events[eventName]);
+      google.maps.event.addDomListener(
+        customControlEl,
+        eventName,
+        events[eventName],
+      );
     }
 
-    mapController.addObject('customControls', customControlEl);
-    NgMap.getMap().then(function(map) {
+    mapController.addObject("customControls", customControlEl);
+    NgMap.getMap().then(function (map) {
       var position = options.position;
       map.controls[google.maps.ControlPosition[position]].push(customControlEl);
     });
-
   };
 
-  var customControl =  function(Attr2MapOptions, _$compile_, _NgMap_)  {
-    parser = Attr2MapOptions, $compile = _$compile_, NgMap = _NgMap_;
+  var customControl = function (Attr2MapOptions, _$compile_, _NgMap_) {
+    (parser = Attr2MapOptions), ($compile = _$compile_), (NgMap = _NgMap_);
 
     return {
-      restrict: 'E',
-      require: ['?^map','?^ngMap'],
-      link: linkFunc
+      restrict: "E",
+      require: ["?^map", "?^ngMap"],
+      link: linkFunc,
     }; // return
   };
-  customControl.$inject = ['Attr2MapOptions', '$compile', 'NgMap'];
+  customControl.$inject = ["Attr2MapOptions", "$compile", "NgMap"];
 
-  angular.module('ngMap').directive('customControl', customControl);
+  angular.module("ngMap").directive("customControl", customControl);
 })();
