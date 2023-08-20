@@ -50,8 +50,7 @@ exports.registerDriver = function (msg, callback) {
             email: email
         });
 
-        newDriver.save(function (err) {
-
+        newDriver.save().then(function (err) {
             if (err) {
                 json_responses = requestGen.responseGenerator(500, {message: "error registering driver"});
             }
@@ -60,7 +59,6 @@ exports.registerDriver = function (msg, callback) {
             }
             callback(null, json_responses);
         });
-
     });
 
 };

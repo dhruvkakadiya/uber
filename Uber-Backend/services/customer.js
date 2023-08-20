@@ -51,8 +51,7 @@ exports.registerCustomer = function(msg, callback){
 
         //console.log("customer id: " +customer.customer_id);
 
-        newCustomer.save(function(err) {
-
+        newCustomer.save().then(function(err) {
             if (err) {
                 json_responses = requestGen.responseGenerator(500, {message: " error registering customer" });
             }
