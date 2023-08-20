@@ -62,7 +62,7 @@ exports.createRide = function (msg, callback) {
                 callback(null, json_responses);
               } else {
                 if (driver) {
-                  newRide.save(function (err) {
+                  newRide.save().then(function (err) {
                     Rides.findOne(
                       {
                         $and: [
@@ -292,7 +292,7 @@ exports.endRide = function (msg, callback) {
 
                         ride.rideEndDateTime = rideEndDateTime;
                         ride.rideCity = city;
-                        ride.save(function (err) {
+                        ride.save().then(function (err) {
                             var rideDoc = ride;
 
                             Drivers.update({email: driverId}, {
@@ -351,8 +351,7 @@ exports.startRide = function (msg, callback) {
       if (ride) {
         ride.rideStarted = true;
         ride.rideStartDateTime = new Date();
-
-        ride.save(function (err) {
+        ride.save().then(function (err) {
           if (err) {
             json_response = requestGen.responseGenerator(500, {
               message: "Error in Ride Saving",
@@ -370,8 +369,7 @@ exports.startRide = function (msg, callback) {
               } else {
                 if (driver) {
                   driver.isBusy = true;
-
-                  driver.save(function (err) {
+                  driver.save().then(function (err) {
                     if (err) {
                       json_response = requestGen.responseGenerator(500, {
                         message: "Enable to start ride",
@@ -442,7 +440,7 @@ exports.rateDriver = function (msg, callback) {
     });
 
     //        console.log("Doc " + doc);
-    doc.save(function (err) {
+    doc.save().then(function (err) {
       var json_response;
       if (err) {
         json_response = requestGen.responseGenerator(401, null);

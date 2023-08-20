@@ -1,15 +1,12 @@
 const mq_client = require("../rpc/client");
 var requestGen = require("./commons/responseGenerator");
 
-var sessionEmail;
-
 exports.index = function (req, res) {
   res.render("signupCustomer");
 };
 
 exports.customerDashboard = function (req, res) {
   if (req.session.customerId) {
-    sessionEmail = req.session.customerId;
     res.header(
       "Cache-Control",
       "no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0",
@@ -88,8 +85,7 @@ exports.loginCustomer = function (req, res) {
         email: email,
         password: password,
         func: "loginCustomer",
-        reqtype: "/reddis/search",
-        httpreqtype: "GET",
+        reqtype: "search",
         data: {
           searchparam: email + password,
           operation: "loginCustomer",
@@ -458,6 +454,11 @@ exports.getCustomerInformation = function (req, res) {
       var msg_payload = {
         customerId: customerId,
         func: "getCustomerInformation",
+        reqtype: "search",
+        data: {
+          searchparam: customerId,
+          operation: "getCustomerInformation",
+        }
       };
 
       mq_client.make_request(

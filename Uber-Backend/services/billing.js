@@ -136,7 +136,7 @@ exports.generateBill = function (msg, callback) {
 
             console.log(JSON.stringify(newBill));
 
-            newBill.save(function (err) {
+            newBill.save().then(function (err) {
               if (err) {
                 console.log(err);
                 json_responses = requestGen.responseGenerator(500, {
