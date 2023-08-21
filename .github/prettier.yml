@@ -3,9 +3,9 @@ name: Apply prettier formatting
 # This action works with pull requests and pushes
 on:
   push:
-    branches: [ "*" ]
+    branches: ["*"]
   pull_request:
-    branches: [ "*" ]
+    branches: ["*"]
 
 jobs:
   format:
