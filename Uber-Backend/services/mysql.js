@@ -2,7 +2,7 @@
 
 var Sequelize = require("sequelize");
 
-var sequelize = new Sequelize("test", "root", "reallyStrongPwd123", {
+var sequelize = new Sequelize("test", process.env.MYSQL_USER, process.env.MYSQL_PASS, {
   host: "localhost",
   dialect: "mysql",
   port: "3306",
