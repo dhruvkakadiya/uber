@@ -3,7 +3,8 @@
   "version": "0.0.2",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node app",
+    "format": "prettier --write **/*.{js,md,css}"
   },
   "dependencies": {
     "amqp": "^0.2.7",

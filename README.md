@@ -72,10 +72,10 @@ Install [Prettier](https://prettier.io/) using npm
 sudo npm -g install --save-dev --save-exact prettier
 ```
 
-Apply prettier formatting to current directory
+Apply prettier formatting to JS, MD and CSS files
 
 ```bash
-prettier . --write
+prettier --write **/*.{js,md,css}
 ```
 
 Apply prettier formatting to specific file

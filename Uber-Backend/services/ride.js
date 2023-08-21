@@ -4,14 +4,12 @@ var rideSchema = require("./model/rideSchema");
 var customerSchema = require("./model/customerSchema");
 var driverSchema = require("./model/driverSchema");
 var requestGen = require("./commons/responseGenerator");
-
-var request = require("request");
+const fetch = require("node-fetch");
 var _ = require("underscore");
 
 var Customers = customerSchema.Customers; //mongoDB instance
 var Drivers = driverSchema.Drivers; //mongoDB instance
-
-var Rides = rideSchema.Rides;
+var Rides = rideSchema.Rides; //mongoDB instance
 
 exports.createRide = function (msg, callback) {
   var pickUpLocation = msg.pickUpLocation;
@@ -229,112 +227,82 @@ exports.customerRideList = function (msg, callback) {
   });
 };
 
-exports.driverRideList = function (msg, callback) {
-  var driverId = msg.driverId;
+exports.driverRideList = async function (msg) {
+  const driverId = msg.driverId;
 
-  Rides.find({ driverId: driverId }, function (err, rides) {
-    var json_responses;
-    if (err) {
-      json_responses = requestGen.responseGenerator(500, {
-        message: "No Ride Found",
-      });
-    } else {
-      if (rides.length > 0) {
-        json_responses = requestGen.responseGenerator(200, rides);
-      } else {
-        json_responses = requestGen.responseGenerator(500, {
-          message: "No Ride Found",
-        });
-      }
-    }
-    callback(null, json_responses);
-  });
+  try {
+    const rides = await Rides.find({ driverId: driverId });
+    const json_responses =
+      rides.length > 0
+        ? requestGen.responseGenerator(200, rides)
+        : requestGen.responseGenerator(500, { message: "No Ride Found" });
+    return json_responses;
+  } catch (err) {
+    const json_responses = requestGen.responseGenerator(500, {
+      message: "No Ride Found",
+    });
+    return json_responses;
+  }
 };
 
-exports.endRide = function (msg, callback) {
-  var dropOffLatLong = msg.dropOffLatLong;
-  var dropOffLocation = msg.dropOffLocation;
-  var driverId = msg.driverId;
-  var rideId = msg.rideId;
+exports.endRide = async function (msg) {
+  const dropOffLatLong = msg.dropOffLatLong;
+  const dropOffLocation = msg.dropOffLocation;
+  const driverId = msg.driverId;
+  const rideId = msg.rideId;
+  const rideEndDateTime = new Date();
 
-  var rideEndDateTime = new Date();
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${dropOffLocation}`,
+    );
+    const data = await response.json();
+    const city = findResult(data.results[0].address_components, "locality");
+    const location = data.results[0].geometry.location;
+    const latitude = location.lat;
+    const longitude = location.lng;
 
-  var json_response;
+    const ride = await Rides.findOne({ rideId: rideId });
+    if (ride) {
+      ride.rideEndDateTime = rideEndDateTime;
+      ride.rideCity = city;
+      await ride.save();
 
-  request(
-    {
-      url: "https://maps.googleapis.com/maps/api/geocode/json", //URL to hit
-      qs: { address: dropOffLocation },
-      method: "GET",
-    },
-    function (error, response, body) {
-      if (error) {
-        console.log(error);
+      const driver = await driverSchema.Drivers.updateOne(
+        { email: driverId },
+        {
+          $set: {
+            isBusy: false,
+            currentLocation: dropOffLocation,
+            latitude: latitude,
+            longitude: longitude,
+            currentRideId: "",
+          },
+        },
+      );
+
+      if (driver) {
+        const rideDoc = ride;
+        const json_response = requestGen.responseGenerator(200, rideDoc);
+        return json_response;
       } else {
-        var city = findResult(
-          JSON.parse(body).results[0].address_components,
-          "locality",
-        );
-        var location = JSON.parse(body).results[0].geometry.location;
-
-        var latitude = location.lat;
-        var longitude = location.lng;
-
-        /*
-            Rides.findOne({rideId: rideId}, function (err, ride) {
-                if (err) {
-                    json_response = requestGen.responseGenerator(500, {message: 'Error'});
-                    callback(null, json_response);
-                }
-                else {
-
-                    if (ride) {
-
-                        ride.rideEndDateTime = rideEndDateTime;
-                        ride.rideCity = city;
-                        ride.save().then(function (err) {
-                            var rideDoc = ride;
-
-                            Drivers.update({email: driverId}, {
-                                $set: {
-                                    isBusy: false,
-                                    currentLocation: dropOffLocation,
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    currentRideId: ""
-                                }
-                            }, function (err, driver) {
-
-                                if (err) {
-                                    json_response = requestGen.responseGenerator(500, {message: 'Error Occurred!'});
-                                    callback(null, json_response);
-                                }
-                                else {
-
-                                    console.log(JSON.stringify(driver));
-
-                                    if (driver) {
-                                        json_response = requestGen.responseGenerator(200, rideDoc);
-                                        callback(null, json_response);
-                                    }
-                                    else {
-                                        json_response = requestGen.responseGenerator(500, {message: 'No Driver Found'});
-                                        callback(null, json_response);
-                                    }
-                                }
-                            });
-                        });
-                    }
-                    else {
-                        json_response = requestGen.responseGenerator(500, {message: 'No Ride Found'});
-                        callback(null, json_response);
-                    }
-                }
-            });
-             */
+        const json_response = requestGen.responseGenerator(500, {
+          message: "No Driver Found",
+        });
+        return json_response;
       }
-    },
-  );
+    } else {
+      const json_response = requestGen.responseGenerator(500, {
+        message: "No Ride Found",
+      });
+      return json_response;
+    }
+  } catch (err) {
+    const json_response = requestGen.responseGenerator(500, {
+      message: "Error Occurred!",
+    });
+    return json_response;
+  }
 };
 
 exports.startRide = function (msg, callback) {

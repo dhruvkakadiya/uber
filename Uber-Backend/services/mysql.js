@@ -2,12 +2,17 @@
 
 var Sequelize = require("sequelize");
 
-var sequelize = new Sequelize("test", process.env.MYSQL_USER, process.env.MYSQL_PASS, {
-  host: "localhost",
-  dialect: "mysql",
-  port: "3306",
-  dialectModule: require("mysql2"),
-});
+var sequelize = new Sequelize(
+  "test",
+  process.env.MYSQL_USER,
+  process.env.MYSQL_PASS,
+  {
+    host: "localhost",
+    dialect: "mysql",
+    port: "3306",
+    dialectModule: require("mysql2"),
+  },
+);
 
 sequelize
   .authenticate()

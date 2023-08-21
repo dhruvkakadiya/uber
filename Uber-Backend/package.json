@@ -1,9 +1,10 @@
 {
-  "name": "RabbitMQ-MongoLoginApplication",
+  "name": "Uber-Backend",
   "version": "0.0.2",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server",
+    "format": "prettier --write **/*.{js,md,css}"
   },
   "dependencies": {
     "amqp": "^0.2.7",
@@ -13,9 +14,9 @@
     "mongoose": "^7.4.3",
     "mysql": "^2.18.1",
     "mysql2": "^3.6.0",
+    "node-fetch": "^2.6.13",
     "passport": "^0.6.0",
     "passport-local-sequelize": "^0.9.1",
-    "request": "^2.88.2",
     "sequelize": "^6.11.0",
     "underscore": "^1.13.6"
   }
