@@ -18,7 +18,7 @@
     "mongodb": "^5.7.0",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
-    "redis": "^4.6.7",
+    "redis": "^4.6.10",
     "socket.io": "^4.7.2",
     "underscore": "^1.13.6"
   }
