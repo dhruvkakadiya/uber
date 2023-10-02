@@ -11,7 +11,7 @@
     "crypto": "^1.0.1",
     "fs": "^0.0.2",
     "gridfs-stream": "^1.1.1",
-    "mongoose": "^7.4.3",
+    "mongoose": "^7.5.3",
     "mysql": "^2.18.1",
     "mysql2": "^3.6.0",
     "node-fetch": "^2.6.13",
